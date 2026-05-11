@@ -1,0 +1,54 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --cyan: #00d4ff;
+  --cyan-dim: #00d4ff44;
+  --cyan-glow: #00d4ff22;
+  --green: #00ff88;
+  --red: #ff4466;
+  --bg: #080c10;
+  --bg-card: rgba(255,255,255,0.03);
+  --bg-glass: rgba(255,255,255,0.05);
+  --border: rgba(0,212,255,0.15);
+  --border-bright: rgba(0,212,255,0.4);
+  --text: #e8f4f8;
+  --text-dim: rgba(232,244,248,0.5);
+  --text-muted: rgba(232,244,248,0.25);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}

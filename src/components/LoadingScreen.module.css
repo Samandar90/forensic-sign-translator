@@ -1,0 +1,254 @@
+/* ── Full-screen boot overlay ── */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Ambient radial glow ── */
+.ambientGlow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 45%, rgba(0,212,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Grid overlay ── */
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ── Horizontal scan line ── */
+.hScanLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,255,0.6), transparent);
+  pointer-events: none;
+  filter: blur(1px);
+}
+
+/* ── Center layout ── */
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+  max-width: 540px;
+  padding: 0 24px;
+}
+
+/* ── Neural network SVG area ── */
+.netWrapper {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  flex-shrink: 0;
+}
+
+.netSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Center logo ── */
+.logoCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: rgba(0,212,255,0.8);
+  border-right-color: rgba(0,212,255,0.3);
+}
+
+.logoRingOuter {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  border-left-color: rgba(0,212,255,0.4);
+  border-bottom-color: rgba(0,212,255,0.15);
+}
+
+.logoIcon {
+  color: var(--cyan);
+  filter: drop-shadow(0 0 10px rgba(0,212,255,0.7));
+  z-index: 1;
+}
+
+/* ── Title ── */
+.titleBlock {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.appTitle {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1;
+}
+
+.appSubtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Boot log ── */
+.bootLog {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 112px;
+}
+
+.bootLine {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  color: rgba(0,212,255,0.75);
+  letter-spacing: 0.02em;
+}
+
+.bootDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  flex-shrink: 0;
+}
+
+/* ── Progress ── */
+.progressWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--cyan);
+  border-radius: 2px;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.progressGlow {
+  position: absolute;
+  right: -4px;
+  top: -3px;
+  width: 12px;
+  height: 9px;
+  background: radial-gradient(circle, rgba(0,212,255,0.9), transparent);
+  border-radius: 50%;
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progressPct {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  font-variant-numeric: tabular-nums;
+}
+
+.progressReady {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 14px rgba(0,255,136,0.6);
+}
+
+.progressLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── Corner markers ── */
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+
+.corner::before,
+.corner::after {
+  content: '';
+  position: absolute;
+  background: rgba(0,212,255,0.5);
+}
+
+.corner::before { width: 100%; height: 1.5px; top: 0; left: 0; }
+.corner::after  { width: 1.5px; height: 100%; top: 0; left: 0; }
+
+.cTR { top: 24px; right: 24px; transform: rotate(90deg); }
+.cBL { bottom: 24px; left: 24px; transform: rotate(270deg); }
+.cBR { bottom: 24px; right: 24px; transform: rotate(180deg); }
+.cTL { top: 24px; left: 24px; }
+
+/* ── Session ID ── */
+.sessionTag {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
