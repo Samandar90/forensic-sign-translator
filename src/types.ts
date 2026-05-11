@@ -1,15 +1,15 @@
+export type AIState = 'idle' | 'listening' | 'thinking' | 'locked'
+
+export type LanguageMode = 'UZB'
+
+export type VoiceStatus = 'muted' | 'ready' | 'speaking' | 'unavailable'
+
 export interface TranscriptEntry {
   id: string
   timestamp: string
   gesture: string
   translation: string
-  confidence: number
-  language: string
 }
-
-export type LanguageMode = 'USL' | 'UZB' | 'RUS'
-
-export type AIState = 'idle' | 'loading' | 'listening' | 'thinking' | 'locked'
 
 export interface SystemStatus {
   isActive: boolean
@@ -19,7 +19,9 @@ export interface SystemStatus {
   currentGesture: string
   currentTranslation: string
   voiceEnabled: boolean
+  voiceStatus: VoiceStatus
   language: LanguageMode
   aiState: AIState
   modelReady: boolean
+  sessionId: string
 }

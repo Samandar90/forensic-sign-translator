@@ -1,27 +1,32 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export type CameraState = 'idle' | 'requesting' | 'active' | 'denied' | 'unavailable' | 'error'
 
 interface UseCameraReturn {
   cameraState: CameraState
   errorMessage: string
-  startCamera: () => Promise<void>
+  startCamera: () => Promise<boolean>
   stopCamera: () => void
 }
 
 export function useCamera(
   videoRef: React.RefObject<HTMLVideoElement | null>,
 ): UseCameraReturn {
-  const streamRef  = useRef<MediaStream | null>(null)
-  const [cameraState,  setCameraState]  = useState<CameraState>('idle')
+  const streamRef = useRef<MediaStream | null>(null)
+  const [cameraState, setCameraState] = useState<CameraState>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop())
+      streamRef.current.getTracks().forEach(track => track.stop())
       streamRef.current = null
     }
-    if (videoRef.current) videoRef.current.srcObject = null
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+      videoRef.current.onloadedmetadata = null
+    }
+
     setCameraState('idle')
     setErrorMessage('')
   }, [videoRef])
@@ -29,8 +34,12 @@ export function useCamera(
   const startCamera = useCallback(async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraState('unavailable')
-      setErrorMessage('Camera API not supported in this browser')
-      return
+      setErrorMessage('Camera API is not supported in this browser.')
+      return false
+    }
+
+    if (cameraState === 'active') {
+      return true
     }
 
     setCameraState('requesting')
@@ -39,45 +48,60 @@ export function useCamera(
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width:       { ideal: 1920, min: 640 },
-          height:      { ideal: 1080, min: 480 },
-          facingMode:  'user',
-          frameRate:   { ideal: 30 },
+          width: { ideal: 1920, min: 640 },
+          height: { ideal: 1080, min: 480 },
+          facingMode: 'user',
+          frameRate: { ideal: 30 },
         },
         audio: false,
       })
 
       streamRef.current = stream
 
-      if (videoRef.current) {
-        videoRef.current.srcObject       = stream
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play()
-          setCameraState('active')
-        }
-      }
-    } catch (err) {
-      streamRef.current = null
-      const e = err as DOMException
-      if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-        setCameraState('denied')
-        setErrorMessage('Camera permission denied. Please allow camera access and try again.')
-      } else if (e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError') {
-        setCameraState('unavailable')
-        setErrorMessage('No camera device found on this system.')
-      } else if (e.name === 'NotReadableError') {
+      const video = videoRef.current
+      if (!video) {
         setCameraState('error')
-        setErrorMessage('Camera is already in use by another application.')
+        setErrorMessage('Camera stream started, but no video target is available.')
+        return false
+      }
+
+      video.srcObject = stream
+
+      await new Promise<void>((resolve, reject) => {
+        video.onloadedmetadata = () => {
+          void video.play().then(resolve).catch(reject)
+        }
+      })
+
+      setCameraState('active')
+      return true
+    } catch (error) {
+      streamRef.current = null
+      const exception = error as DOMException
+
+      if (exception.name === 'NotAllowedError' || exception.name === 'PermissionDeniedError') {
+        setCameraState('denied')
+        setErrorMessage('Camera permission was denied. Allow access and try again.')
+      } else if (exception.name === 'NotFoundError' || exception.name === 'DevicesNotFoundError') {
+        setCameraState('unavailable')
+        setErrorMessage('No camera device was found on this system.')
+      } else if (exception.name === 'NotReadableError') {
+        setCameraState('error')
+        setErrorMessage('The camera is busy in another application.')
       } else {
         setCameraState('error')
-        setErrorMessage(`Camera error: ${e.message || 'Unknown error'}`)
+        setErrorMessage(`Camera error: ${exception.message || 'Unknown error'}`)
       }
+
+      return false
     }
-  }, [videoRef])
+  }, [cameraState, videoRef])
 
   useEffect(() => {
     return () => {
-      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop())
+      }
     }
   }, [])
 

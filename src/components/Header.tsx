@@ -1,6 +1,7 @@
-import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, Wifi, WifiOff, Brain } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Brain, Shield, Wifi, WifiOff } from 'lucide-react'
 import type { SystemStatus } from '../types'
+import { MODE_LABEL } from '../utils/session'
 import styles from './Header.module.css'
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
 }
 
 export default function Header({ status }: Props) {
+  const showThinking = status.aiState === 'thinking'
+
   return (
     <header className={styles.header}>
       <div className={styles.left}>
@@ -16,23 +19,18 @@ export default function Header({ status }: Props) {
         </div>
         <div className={styles.titleGroup}>
           <h1 className={styles.title}>Forensic Sign Translator</h1>
-          <span className={styles.subtitle}>AI Forensic Intelligence System · v2.4.1</span>
+          <span className={styles.subtitle}>Emergency communication intelligence interface</span>
         </div>
       </div>
 
-      {/* Static mode badge — single language, no tabs */}
       <div className={styles.center}>
-        <div className={styles.modeBadge}>
-          <span className={styles.modeFlag}>🇺🇿</span>
-          Uzbek Emergency Sign Mode
-        </div>
+        <div className={styles.modeBadge}>{MODE_LABEL}</div>
       </div>
 
       <div className={styles.right}>
-        {/* AI listening status */}
         <motion.div
           className={`${styles.statusBadge} ${status.isListening ? styles.statusActive : styles.statusIdle}`}
-          animate={status.isListening ? { opacity: [1, 0.5, 1] } : { opacity: 1 }}
+          animate={status.isListening ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
           transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
         >
           {status.isListening ? (
@@ -42,18 +40,17 @@ export default function Header({ status }: Props) {
           )}
         </motion.div>
 
-        {/* AI thinking indicator */}
         <AnimatePresence>
-          {status.aiState === 'thinking' && (
+          {showThinking && (
             <motion.div
               className={styles.processingBadge}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              exit={{ opacity: 0, scale: 0.92 }}
             >
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'linear' }}
                 style={{ display: 'flex' }}
               >
                 <Brain size={12} strokeWidth={2} />
@@ -64,8 +61,8 @@ export default function Header({ status }: Props) {
         </AnimatePresence>
 
         <div className={styles.sessionInfo}>
-          <span className={styles.sessionLabel}>SESSION</span>
-          <span className={styles.sessionId}>FST-{Date.now().toString(36).toUpperCase().slice(-6)}</span>
+          <span className={styles.sessionLabel}>Session</span>
+          <span className={styles.sessionId}>{status.sessionId}</span>
         </div>
       </div>
     </header>

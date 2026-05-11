@@ -1,127 +1,122 @@
 .panel {
   display: flex;
   flex-direction: column;
-  background: var(--bg-card);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+    rgba(5, 11, 16, 0.9);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 24px;
   overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(18px);
 }
 
-/* ── Header ── */
 .panelHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(255,255,255,0.02);
-  flex-shrink: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.12);
 }
 
 .panelTitle {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
   color: var(--text-dim);
-  letter-spacing: 0.04em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
 }
 
 .indicators {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  flex-shrink: 0;
 }
+
 .dotActive {
   background: var(--red);
-  box-shadow: 0 0 8px var(--red);
+  box-shadow: 0 0 14px rgba(255, 68, 102, 0.55);
   animation: dotPulse 1.2s ease-in-out infinite;
 }
+
 .dotIdle {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 @keyframes dotPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  50% { opacity: 0.4; }
 }
 
 .feedLabel {
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--text-muted);
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-/* ── Viewport ── */
 .viewport {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/10;
-  background: #020406;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(0, 212, 255, 0.1), transparent 48%),
+    linear-gradient(180deg, #071018, #030609 70%);
 }
 
-/* ── Real video element ── */
-.videoFeed {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transform: scaleX(-1);
-  z-index: 1;
-}
-
-/* ── Hand tracking canvas ── */
+.videoFeed,
 .trackingCanvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  display: block;
-  pointer-events: none;
-  z-index: 4;
-  transition: opacity 0.4s ease;
 }
 
-/* ── Grid overlay ── */
+.videoFeed {
+  object-fit: cover;
+  transform: scaleX(-1);
+  z-index: 1;
+}
+
+.trackingCanvas {
+  pointer-events: none;
+  z-index: 4;
+}
+
 .grid {
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-  background-size: 44px 44px;
-  pointer-events: none;
   z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
-/* ── Forensic corner brackets ── */
 .corner {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  z-index: 10;
-  transition: border-color 0.4s;
+  width: 28px;
+  height: 28px;
+  z-index: 7;
 }
-.cornerTL { top: 14px; left: 14px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
-.cornerTR { top: 14px; right: 14px; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
-.cornerBL { bottom: 14px; left: 14px; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
-.cornerBR { bottom: 14px; right: 14px; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
 
-/* ── State overlay (idle / requesting / denied / error) ── */
+.cornerTL { top: 16px; left: 16px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+.cornerTR { top: 16px; right: 16px; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+.cornerBL { bottom: 16px; left: 16px; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+.cornerBR { bottom: 16px; right: 16px; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
 .stateOverlay {
   position: absolute;
   inset: 0;
@@ -132,52 +127,45 @@
   justify-content: center;
   gap: 10px;
   text-align: center;
-  padding: 20px;
-  background: rgba(2,4,6,0.7);
-  backdrop-filter: blur(4px);
+  padding: 24px;
+  background: rgba(2, 5, 8, 0.72);
+  backdrop-filter: blur(5px);
 }
 
 .cameraIcon {
-  color: rgba(0,212,255,0.18);
-  margin-bottom: 6px;
-}
-
-.errorIcon {
-  margin-bottom: 6px;
+  color: rgba(0, 212, 255, 0.2);
 }
 
 .stateTitle {
-  font-size: 14px;
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .stateSubtitle {
-  font-size: 11px;
-  color: rgba(232,244,248,0.2);
-  max-width: 280px;
-  line-height: 1.5;
+  max-width: 300px;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.stateHint {
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .retryBtn {
   margin-top: 8px;
-  background: rgba(255,68,102,0.1);
-  border: 1px solid rgba(255,68,102,0.25);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 68, 102, 0.24);
+  background: rgba(255, 68, 102, 0.1);
   color: var(--red);
   font-size: 11px;
-  font-weight: 600;
-  padding: 6px 16px;
-  border-radius: 6px;
+  font-weight: 700;
   cursor: pointer;
-  letter-spacing: 0.04em;
-  transition: all 0.2s;
-}
-.retryBtn:hover {
-  background: rgba(255,68,102,0.18);
-  border-color: rgba(255,68,102,0.5);
 }
 
-/* ── Active forensic overlays container ── */
 .activeOverlays {
   position: absolute;
   inset: 0;
@@ -185,404 +173,218 @@
   pointer-events: none;
 }
 
-/* ── Top overlay bar ── */
 .overlayTop {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(to bottom, rgba(2,4,6,0.75), transparent);
-}
-
-.overlayTopLeft, .overlayTopRight {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, rgba(3, 8, 12, 0.8), transparent);
 }
 
 .aiBadge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--cyan);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--cyan);
-  background: rgba(0,212,255,0.12);
-  border: 1px solid rgba(0,212,255,0.25);
-  padding: 4px 10px;
-  border-radius: 4px;
+  letter-spacing: 0.14em;
 }
 
 .aiBadgeDot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 6px var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
 }
 
 .liveTimestamp {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(232,244,248,0.6);
-  letter-spacing: 0.06em;
+  color: rgba(232, 244, 248, 0.72);
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
-  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-family: var(--mono-font);
 }
 
-/* ── Scanning line ── */
+.scanStatus {
+  position: absolute;
+  top: 58px;
+  left: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 212, 255, 0.16);
+  background: rgba(3, 8, 12, 0.62);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+
+.handMeta {
+  color: var(--text-muted);
+}
+
 .scanLine {
   position: absolute;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.7) 30%, var(--cyan) 50%, rgba(0,212,255,0.7) 70%, transparent 100%);
-  box-shadow: 0 0 16px var(--cyan), 0 0 40px rgba(0,212,255,0.25);
-  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.7), var(--cyan), rgba(0, 212, 255, 0.7), transparent);
+  box-shadow: 0 0 18px rgba(0, 212, 255, 0.65);
 }
 
-/* ── Gesture detection box ── */
+.scanLineActive {
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.55), var(--green), rgba(0, 255, 136, 0.55), transparent);
+  box-shadow: 0 0 18px rgba(0, 255, 136, 0.55);
+}
+
 .detectionBox {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 220px;
+  height: 250px;
   transform: translate(-50%, -50%);
-  width: 200px;
-  height: 230px;
-  pointer-events: none;
 }
 
 .detectionCorner {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
-.dTL { top: 0; left: 0; border-top: 2px solid var(--green); border-left: 2px solid var(--green); border-radius: 2px 0 0 0; }
-.dTR { top: 0; right: 0; border-top: 2px solid var(--green); border-right: 2px solid var(--green); border-radius: 0 2px 0 0; }
-.dBL { bottom: 0; left: 0; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); border-radius: 0 0 0 2px; }
-.dBR { bottom: 0; right: 0; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); border-radius: 0 0 2px 0; }
+
+.dTL { top: 0; left: 0; border-top: 2px solid var(--green); border-left: 2px solid var(--green); }
+.dTR { top: 0; right: 0; border-top: 2px solid var(--green); border-right: 2px solid var(--green); }
+.dBL { bottom: 0; left: 0; border-bottom: 2px solid var(--green); border-left: 2px solid var(--green); }
+.dBR { bottom: 0; right: 0; border-bottom: 2px solid var(--green); border-right: 2px solid var(--green); }
 
 .detectionLabel {
   position: absolute;
-  bottom: -24px;
   left: 50%;
+  bottom: -26px;
   transform: translateX(-50%);
-  font-size: 9px;
-  letter-spacing: 0.14em;
   color: var(--green);
+  font-size: 10px;
   font-weight: 700;
-  white-space: nowrap;
-  text-shadow: 0 0 12px var(--green);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 0 14px rgba(0, 255, 136, 0.35);
 }
 
-/* ── Processing flash ── */
 .processingOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,212,255,0.05);
-  border: 1px solid rgba(0,212,255,0.15);
-  pointer-events: none;
+  background: rgba(0, 212, 255, 0.06);
+  border: 1px solid rgba(0, 212, 255, 0.12);
 }
 
-/* ── Bottom overlay bar ── */
-.overlayBar {
+.subtitleWrap {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px 16px;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(to top, rgba(2,4,6,0.85), transparent);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(0,212,255,0.45);
-  z-index: 7;
-  pointer-events: none;
+  justify-content: center;
 }
 
-.overlayLeft, .overlayRight {
+.subtitleCard {
+  min-width: min(520px, 100%);
+  max-width: 100%;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 6px;
-}
-
-.recIndicator {
-  display: flex;
   align-items: center;
-  gap: 5px;
-  color: var(--red);
+  padding: 16px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 10, 14, 0.74);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+  text-align: center;
+}
+
+.subtitleText {
+  color: var(--text);
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1.12;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: -0.04em;
+  text-shadow: 0 0 28px rgba(0, 212, 255, 0.1);
 }
 
-.recDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--red);
-  box-shadow: 0 0 8px var(--red);
+.subtitleHint {
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
-/* ── Controls bar ── */
 .controls {
-  padding: 16px 18px;
-  border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(255,255,255,0.015);
-  flex-shrink: 0;
+  padding: 16px 20px 18px;
+  border-top: 1px solid rgba(0, 212, 255, 0.12);
+}
+
+.startBtn,
+.stopBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid;
+  cursor: pointer;
 }
 
 .startBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,212,255,0.07));
-  border: 1px solid rgba(0,212,255,0.35);
   color: var(--cyan);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 9px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.02em;
-}
-.startBtn:hover {
-  background: linear-gradient(135deg, rgba(0,212,255,0.22), rgba(0,212,255,0.12));
-  border-color: rgba(0,212,255,0.6);
-  box-shadow: 0 0 24px rgba(0,212,255,0.15);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.07));
+  border-color: rgba(0, 212, 255, 0.3);
 }
 
 .stopBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, rgba(255,68,102,0.12), rgba(255,68,102,0.05));
-  border: 1px solid rgba(255,68,102,0.3);
   color: var(--red);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 9px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.02em;
-}
-.stopBtn:hover {
-  background: linear-gradient(135deg, rgba(255,68,102,0.18), rgba(255,68,102,0.1));
-  border-color: rgba(255,68,102,0.5);
-  box-shadow: 0 0 20px rgba(255,68,102,0.12);
-}
-
-.specs {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto;
-}
-
-.spec {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  color: var(--text-muted);
-  letter-spacing: 0.04em;
-}
-
-.specModel {
-  font-size: 10px;
-  color: rgba(0,212,255,0.4);
-  letter-spacing: 0.06em;
-  font-weight: 600;
-}
-
-.specDivider {
-  width: 1px;
-  height: 12px;
-  background: var(--border);
+  background: linear-gradient(135deg, rgba(255, 68, 102, 0.14), rgba(255, 68, 102, 0.07));
+  border-color: rgba(255, 68, 102, 0.26);
 }
 
 .hintText {
   margin-left: auto;
-  font-size: 10px;
   color: var(--text-muted);
-  letter-spacing: 0.03em;
-  text-align: right;
+  font-size: 12px;
 }
 
-/* ── Idle state hint ── */
-.stateHint {
-  font-size: 10px;
-  color: rgba(232,244,248,0.18);
-  max-width: 260px;
-  text-align: center;
-  line-height: 1.6;
-  margin-top: 4px;
-}
+@media (max-width: 860px) {
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-/* ── Model loading badge ── */
-.loadingBadge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: rgba(0,212,255,0.6);
-  background: rgba(0,212,255,0.07);
-  border: 1px solid rgba(0,212,255,0.15);
-  padding: 3px 9px;
-  border-radius: 4px;
-}
+  .hintText {
+    margin-left: 0;
+    text-align: center;
+  }
 
-/* ── Hand detected strip ── */
-.handStrip {
-  position: absolute;
-  top: 46px;
-  left: 14px;
-  right: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 12px;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(0,255,136,0.3);
-  border-radius: 6px;
-  backdrop-filter: blur(6px);
-  overflow: hidden;
-  gap: 8px;
-}
+  .scanStatus {
+    right: 18px;
+  }
 
-.handStripPulse {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,255,136,0.08);
-  pointer-events: none;
-}
-
-.handStripLeft {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--green);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-shadow: 0 0 10px var(--green);
-  flex-shrink: 0;
-}
-
-.handCount {
-  letter-spacing: 0.1em;
-}
-
-.handStripRight {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.handChip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(0,212,255,0.1);
-  border: 1px solid rgba(0,212,255,0.2);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 9px;
-  font-weight: 600;
-}
-
-.handChipLabel {
-  color: var(--text-dim);
-  letter-spacing: 0.04em;
-}
-
-.handChipConf {
-  color: var(--cyan);
-  letter-spacing: 0.04em;
-}
-
-.confPill {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-}
-
-/* ── Scanning state strip ── */
-.scanningStrip {
-  position: absolute;
-  top: 46px;
-  left: 14px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 11px;
-  background: rgba(0,0,0,0.45);
-  border: 1px solid rgba(0,212,255,0.15);
-  border-radius: 5px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: rgba(0,212,255,0.45);
-  backdrop-filter: blur(4px);
-}
-
-.scanningDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--cyan);
-  flex-shrink: 0;
-}
-
-/* ── Scan line (color changes when hand detected) ── */
-.scanLine {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0,212,255,0.6) 30%,
-    var(--cyan) 50%,
-    rgba(0,212,255,0.6) 70%,
-    transparent 100%
-  );
-  box-shadow: 0 0 14px var(--cyan), 0 0 36px rgba(0,212,255,0.2);
-  pointer-events: none;
-}
-
-.scanLineActive {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0,255,136,0.5) 30%,
-    var(--green) 50%,
-    rgba(0,255,136,0.5) 70%,
-    transparent 100%
-  );
-  box-shadow: 0 0 14px var(--green), 0 0 36px rgba(0,255,136,0.2);
+  .subtitleWrap {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+  }
 }

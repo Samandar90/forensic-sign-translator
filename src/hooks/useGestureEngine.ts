@@ -1,301 +1,296 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
-import type { TranscriptEntry, AIState, SystemStatus } from '../types'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { SystemStatus, TranscriptEntry, VoiceStatus } from '../types'
 import { useTMClassifier } from './useTMClassifier'
+import { createSessionId, formatClockTimestamp } from '../utils/session'
+import { cancelSpeech, speakText, speechSupported } from '../utils/speech'
 
-// ── Recognition constants (as specified) ─────────────────────────────────────
-const CONFIDENCE_THRESHOLD    = 0.85   // below this → treat as NoGesture
-const STABLE_LOCK_MS          = 900    // gesture must hold this long to lock
-const CLEAR_WHEN_NO_HAND_MS   = 800    // delay before wiping subtitle on no-gesture
-const SAME_GESTURE_COOLDOWN_MS = 5000  // min ms before same gesture re-adds
-const NEUTRAL_REQUIRED_MS     = 700    // how long neutral must hold before reset
-// PREDICTION_INTERVAL_MS is set in useTMClassifier (200ms)
+const CONFIDENCE_THRESHOLD = 0.85
+const GESTURE_LOCK_MS = 900
+const NO_HAND_CLEAR_MS = 700
+const SAME_GESTURE_COOLDOWN_MS = 5000
 
-// ── Phrase map ────────────────────────────────────────────────────────────────
 const PHRASE_MAP: Record<string, string> = {
-  Help: "Menga yordam kerak",
-  Stop: "To'xtang",
-  Yes:  "Ha",
-  No:   "Yo'q",
+  Help: 'Menga yordam kerak',
+  Stop: 'To‘xtang',
+  Yes: 'Ha',
+  No: 'Yo‘q',
 }
 
-// ── Gesture state phase ───────────────────────────────────────────────────────
-type GesturePhase = 'SCANNING' | 'CANDIDATE' | 'LOCKED'
-
-// ── Speech synthesis ──────────────────────────────────────────────────────────
-function getBestVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
-  const priority = ['uz', 'ru', 'tr', 'en']
-  for (const lang of priority) {
-    const local = voices.find(v => v.lang.toLowerCase().includes(lang) && v.localService)
-    if (local) return local
-    const any = voices.find(v => v.lang.toLowerCase().includes(lang))
-    if (any) return any
-  }
-  return voices[0] ?? null
-}
-
-function speakText(text: string) {
-  if (!text || typeof window === 'undefined' || !('speechSynthesis' in window)) return
-  window.speechSynthesis.cancel()
-
-  const doSpeak = () => {
-    const utt    = new SpeechSynthesisUtterance(text)
-    const voices = window.speechSynthesis.getVoices()
-    const voice  = getBestVoice(voices)
-    if (voice) utt.voice = voice
-    utt.rate   = 0.85
-    utt.pitch  = 0.95
-    utt.volume = 1
-    window.speechSynthesis.speak(utt)
-  }
-
-  if (window.speechSynthesis.getVoices().length > 0) {
-    doSpeak()
-  } else {
-    window.speechSynthesis.onvoiceschanged = () => {
-      window.speechSynthesis.onvoiceschanged = null
-      doSpeak()
-    }
-  }
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function generateId() {
   return Math.random().toString(36).slice(2, 10)
 }
 
-function formatTimestamp() {
-  const d = new Date()
-  return d.toLocaleTimeString('en-GB', { hour12: false })
-}
-
-// ── Hook ──────────────────────────────────────────────────────────────────────
 export function useGestureEngine(
   videoRef: React.RefObject<HTMLVideoElement | null>,
   handsDetected: number,
 ) {
-  const [isActive,      setIsActive]      = useState(false)
-  const [voiceEnabled,  setVoiceEnabled]  = useState(true)
-
-  // Display state
-  const [aiState,            setAiState]            = useState<AIState>('idle')
-  const [currentGesture,     setCurrentGesture]     = useState('')
+  const [isActive, setIsActive] = useState(false)
+  const [voiceEnabled, setVoiceEnabled] = useState(true)
+  const [voiceStatus, setVoiceStatus] = useState<VoiceStatus>(
+    speechSupported() ? 'ready' : 'unavailable',
+  )
+  const [aiState, setAiState] = useState<SystemStatus['aiState']>('idle')
+  const [currentGesture, setCurrentGesture] = useState('')
   const [currentTranslation, setCurrentTranslation] = useState('')
-  const [confidence,         setConfidence]         = useState(0)
-  const [transcript,         setTranscript]         = useState<TranscriptEntry[]>([])
+  const [confidence, setConfidence] = useState(0)
+  const [transcript, setTranscript] = useState<TranscriptEntry[]>([])
 
-  // Phase machine refs (no re-render needed)
-  const phaseRef              = useRef<GesturePhase>('SCANNING')
-  const candidateGestureRef   = useRef('')
-  const candidateStartRef     = useRef(0)
-  const hasReturnedToNeutral  = useRef(true)    // must go neutral before re-locking same gesture
-  const lastAddedGestureRef   = useRef('')
-  const lastAddedTimeRef      = useRef(0)
-  const lastSpokenPhraseRef   = useRef('')
-  const lastSpokenTimeRef     = useRef(0)
-
-  // Timers
-  const clearTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const sessionIdRef = useRef(createSessionId())
+  const candidateGestureRef = useRef('')
+  const candidateStartedAtRef = useRef(0)
+  const lockedGestureRef = useRef('')
+  const lastCommittedGestureRef = useRef('')
+  const lastCommittedAtRef = useRef(0)
+  const neutralReadyRef = useRef(true)
+  const clearSubtitleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const neutralTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const { modelStatus, predictions } = useTMClassifier(videoRef, isActive)
 
-  // ── Map model loading state → aiState ──────────────────────────────────────
-  useEffect(() => {
-    if (!isActive)                setAiState('idle')
-    else if (modelStatus === 'loading') setAiState('loading')
-    else if (modelStatus === 'error')   setAiState('idle')
-  }, [isActive, modelStatus])
-
-  // ── Helpers ──────────────────────────────────────────────────────────────────
-  const cancelClearTimer = () => {
-    if (clearTimerRef.current) { clearTimeout(clearTimerRef.current); clearTimerRef.current = null }
-  }
-  const cancelNeutralTimer = () => {
-    if (neutralTimerRef.current) { clearTimeout(neutralTimerRef.current); neutralTimerRef.current = null }
-  }
-
-  const enterScanning = useCallback(() => {
-    phaseRef.current         = 'SCANNING'
-    candidateGestureRef.current = ''
-    candidateStartRef.current   = 0
-    setAiState('listening')
-
-    // Schedule display clear after CLEAR_WHEN_NO_HAND_MS
-    cancelClearTimer()
-    clearTimerRef.current = setTimeout(() => {
-      setCurrentGesture('')
-      setCurrentTranslation('')
-      setConfidence(0)
-      clearTimerRef.current = null
-    }, CLEAR_WHEN_NO_HAND_MS)
-
-    // Mark as returned to neutral after NEUTRAL_REQUIRED_MS
-    cancelNeutralTimer()
-    if (!hasReturnedToNeutral.current) {
-      neutralTimerRef.current = setTimeout(() => {
-        hasReturnedToNeutral.current = true
-        neutralTimerRef.current = null
-      }, NEUTRAL_REQUIRED_MS)
+  const cancelClearTimer = useCallback(() => {
+    if (clearSubtitleTimerRef.current) {
+      clearTimeout(clearSubtitleTimerRef.current)
+      clearSubtitleTimerRef.current = null
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ── Main prediction effect ──────────────────────────────────────────────────
-  useEffect(() => {
-    if (!isActive || modelStatus !== 'ready' || predictions.length === 0) return
+  const cancelNeutralTimer = useCallback(() => {
+    if (neutralTimerRef.current) {
+      clearTimeout(neutralTimerRef.current)
+      neutralTimerRef.current = null
+    }
+  }, [])
 
-    const top = predictions.reduce((best, p) =>
-      p.confidence > best.confidence ? p : best,
-    )
+  const clearLiveGesture = useCallback((clearSubtitleNow = false) => {
+    setCurrentGesture('')
+    setConfidence(0)
 
-    const isNoGesture = (
-      top.label === 'NoGesture' ||
-      top.confidence < CONFIDENCE_THRESHOLD ||
-      handsDetected === 0
-    )
-
-    // ── NO GESTURE / NO HANDS ─────────────────────────────────────────
-    if (isNoGesture) {
-      if (phaseRef.current !== 'SCANNING') {
-        enterScanning()
-      }
+    if (clearSubtitleNow) {
+      cancelClearTimer()
+      setCurrentTranslation('')
       return
     }
 
-    // ── REAL GESTURE DETECTED ─────────────────────────────────────────
+    if (!clearSubtitleTimerRef.current) {
+      clearSubtitleTimerRef.current = setTimeout(() => {
+        setCurrentTranslation('')
+        clearSubtitleTimerRef.current = null
+      }, NO_HAND_CLEAR_MS)
+    }
+  }, [cancelClearTimer])
+
+  const enterNeutralState = useCallback((clearSubtitleNow = false) => {
+    candidateGestureRef.current = ''
+    candidateStartedAtRef.current = 0
+    lockedGestureRef.current = ''
+
+    if (isActive && modelStatus === 'ready') {
+      setAiState('listening')
+    } else if (!isActive) {
+      setAiState('idle')
+    }
+
+    clearLiveGesture(clearSubtitleNow)
+
+    if (!neutralTimerRef.current) {
+      neutralTimerRef.current = setTimeout(() => {
+        neutralReadyRef.current = true
+        neutralTimerRef.current = null
+      }, NO_HAND_CLEAR_MS)
+    }
+  }, [cancelNeutralTimer, clearLiveGesture, isActive, modelStatus])
+
+  const resetDetectionState = useCallback(() => {
+    candidateGestureRef.current = ''
+    candidateStartedAtRef.current = 0
+    lockedGestureRef.current = ''
+    lastCommittedGestureRef.current = ''
+    lastCommittedAtRef.current = 0
+    neutralReadyRef.current = true
+    cancelClearTimer()
+    cancelNeutralTimer()
+  }, [cancelClearTimer, cancelNeutralTimer])
+
+  useEffect(() => {
+    if (!isActive) {
+      setAiState('idle')
+      clearLiveGesture(true)
+      return
+    }
+
+    if (modelStatus === 'ready') {
+      setAiState(prev => (prev === 'idle' ? 'listening' : prev))
+      return
+    }
+
+    setAiState('idle')
+  }, [clearLiveGesture, isActive, modelStatus])
+
+  useEffect(() => {
+    if (!voiceEnabled) {
+      setVoiceStatus('muted')
+      cancelSpeech()
+      return
+    }
+
+    setVoiceStatus(speechSupported() ? 'ready' : 'unavailable')
+  }, [voiceEnabled])
+
+  useEffect(() => {
+    if (!isActive || modelStatus !== 'ready') {
+      return
+    }
+
+    const bestPrediction = predictions.reduce<{ label: string; confidence: number } | null>(
+      (best, prediction) => {
+        if (!best || prediction.confidence > best.confidence) {
+          return prediction
+        }
+        return best
+      },
+      null,
+    )
+
+    const noHandsVisible = handsDetected === 0
+    const belowThreshold = !bestPrediction || bestPrediction.confidence < CONFIDENCE_THRESHOLD
+    const noGestureDetected = bestPrediction?.label === 'NoGesture'
+
+    if (noHandsVisible || belowThreshold || noGestureDetected) {
+      enterNeutralState(false)
+      return
+    }
+
     cancelClearTimer()
     cancelNeutralTimer()
 
-    const label       = top.label
+    const label = bestPrediction.label
     const translation = PHRASE_MAP[label] ?? label
-    const pct         = Math.round(top.confidence * 100)
+    const nextConfidence = Math.round(bestPrediction.confidence * 100)
+    const now = Date.now()
 
-    // If the gesture changed, reset candidate tracking
-    if (candidateGestureRef.current !== label) {
-      candidateGestureRef.current = label
-      candidateStartRef.current   = Date.now()
-      phaseRef.current = 'CANDIDATE'
-      setAiState('thinking')
-    }
-
-    // Always update live display
     setCurrentGesture(label)
     setCurrentTranslation(translation)
-    setConfidence(pct)
+    setConfidence(nextConfidence)
 
-    // Check stability duration
-    const elapsed = Date.now() - candidateStartRef.current
-
-    if (elapsed < STABLE_LOCK_MS) {
-      // Still building stability
+    if (candidateGestureRef.current !== label) {
+      candidateGestureRef.current = label
+      candidateStartedAtRef.current = now
+      lockedGestureRef.current = ''
       setAiState('thinking')
       return
     }
 
-    // ── STABLE — try to lock ──────────────────────────────────────────
-    phaseRef.current = 'LOCKED'
+    if (now - candidateStartedAtRef.current < GESTURE_LOCK_MS) {
+      setAiState('thinking')
+      return
+    }
+
     setAiState('locked')
 
-    // Only add to transcript if user has returned to neutral since last entry
-    if (!hasReturnedToNeutral.current) return
+    if (lockedGestureRef.current === label) {
+      return
+    }
 
-    const now             = Date.now()
-    const isNewGesture    = label !== lastAddedGestureRef.current
-    const cooldownExpired = now - lastAddedTimeRef.current > SAME_GESTURE_COOLDOWN_MS
+    lockedGestureRef.current = label
 
-    if (!isNewGesture && !cooldownExpired) return
+    if (!neutralReadyRef.current) {
+      return
+    }
 
-    // ── COMMIT entry ──────────────────────────────────────────────────
-    hasReturnedToNeutral.current = false
-    lastAddedGestureRef.current  = label
-    lastAddedTimeRef.current     = now
+    const isSameGestureAsLastCommit = lastCommittedGestureRef.current === label
+    const cooldownActive = now - lastCommittedAtRef.current < SAME_GESTURE_COOLDOWN_MS
+    if (isSameGestureAsLastCommit && cooldownActive) {
+      neutralReadyRef.current = false
+      return
+    }
+
+    neutralReadyRef.current = false
+    lastCommittedGestureRef.current = label
+    lastCommittedAtRef.current = now
 
     const entry: TranscriptEntry = {
-      id:          generateId(),
-      timestamp:   formatTimestamp(),
-      gesture:     label,
+      id: generateId(),
+      timestamp: formatClockTimestamp(),
+      gesture: label,
       translation,
-      confidence:  pct,
-      language:    'UZB',
     }
-    setTranscript(prev => [entry, ...prev].slice(0, 60))
 
-    // ── SPEECH ────────────────────────────────────────────────────────
-    const speechCooldownOk = now - lastSpokenTimeRef.current > SAME_GESTURE_COOLDOWN_MS
-    if (voiceEnabled && (translation !== lastSpokenPhraseRef.current || speechCooldownOk)) {
-      lastSpokenPhraseRef.current = translation
-      lastSpokenTimeRef.current   = now
-      speakText(translation)
+    setTranscript(prev => [...prev, entry].slice(-60))
+
+    if (!voiceEnabled || voiceStatus === 'unavailable') {
+      return
     }
-  }, [predictions, isActive, modelStatus, handsDetected, voiceEnabled, enterScanning])
 
-  // ── Session controls ────────────────────────────────────────────────────────
+    void speakText({
+      text: translation,
+      cooldownMs: SAME_GESTURE_COOLDOWN_MS,
+      onStart: () => setVoiceStatus('speaking'),
+      onEnd: () => setVoiceStatus('ready'),
+      onError: () => setVoiceStatus(speechSupported() ? 'ready' : 'unavailable'),
+    })
+  }, [
+    cancelClearTimer,
+    cancelNeutralTimer,
+    enterNeutralState,
+    handsDetected,
+    isActive,
+    modelStatus,
+    predictions,
+    voiceEnabled,
+    voiceStatus,
+  ])
+
   const startSession = useCallback(() => {
-    phaseRef.current             = 'SCANNING'
-    candidateGestureRef.current  = ''
-    candidateStartRef.current    = 0
-    hasReturnedToNeutral.current = true
-    lastAddedGestureRef.current  = ''
-    lastAddedTimeRef.current     = 0
-    lastSpokenPhraseRef.current  = ''
-    lastSpokenTimeRef.current    = 0
+    resetDetectionState()
+    sessionIdRef.current = createSessionId()
     setCurrentGesture('')
     setCurrentTranslation('')
     setConfidence(0)
+    setTranscript([])
     setIsActive(true)
-  }, [])
+    setAiState('idle')
+  }, [resetDetectionState])
 
   const stopSession = useCallback(() => {
     setIsActive(false)
     setAiState('idle')
-    setCurrentGesture('')
-    setCurrentTranslation('')
-    setConfidence(0)
-    cancelClearTimer()
-    cancelNeutralTimer()
-    window.speechSynthesis?.cancel()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    clearLiveGesture(true)
+    resetDetectionState()
+    cancelSpeech()
+  }, [clearLiveGesture, resetDetectionState])
 
   const demoReset = useCallback(() => {
     stopSession()
+    sessionIdRef.current = createSessionId()
     setTranscript([])
-    lastAddedGestureRef.current  = ''
-    lastSpokenPhraseRef.current  = ''
-    hasReturnedToNeutral.current = true
   }, [stopSession])
 
-  const toggleVoice    = useCallback(() => setVoiceEnabled(v => !v), [])
+  const toggleVoice = useCallback(() => {
+    setVoiceEnabled(prev => !prev)
+  }, [])
 
   const clearTranscript = useCallback(() => {
     setTranscript([])
-    lastAddedGestureRef.current  = ''
-    lastSpokenPhraseRef.current  = ''
-    hasReturnedToNeutral.current = true
-    setCurrentGesture('')
-    setCurrentTranslation('')
-    setConfidence(0)
   }, [])
 
   useEffect(() => () => {
-    cancelClearTimer()
-    cancelNeutralTimer()
-    window.speechSynthesis?.cancel()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    resetDetectionState()
+    cancelSpeech()
+  }, [resetDetectionState])
 
-  // ── SystemStatus ────────────────────────────────────────────────────────────
   const status: SystemStatus = {
     isActive,
-    isListening:  isActive && aiState !== 'idle' && aiState !== 'loading',
+    isListening: isActive && aiState === 'listening',
     isProcessing: aiState === 'thinking',
     confidence,
     currentGesture,
     currentTranslation,
     voiceEnabled,
-    language:   'UZB',
+    voiceStatus,
+    language: 'UZB',
     aiState,
     modelReady: modelStatus === 'ready',
+    sessionId: sessionIdRef.current,
   }
 
   return {

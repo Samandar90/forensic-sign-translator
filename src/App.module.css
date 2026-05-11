@@ -1,71 +1,65 @@
 .app {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
   overflow: hidden;
 }
 
 .main {
-  flex: 1;
-  padding: 24px 28px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
   position: relative;
   z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 22px;
   align-items: start;
 }
 
-.cameraCol {
-  display: flex;
-  flex-direction: column;
-}
-
+.cameraCol,
 .analysisCol {
   display: flex;
   flex-direction: column;
 }
 
-/* Ambient background glows */
-.ambientTL {
+.ambientTL,
+.ambientBR {
   position: fixed;
-  top: -200px;
-  left: -200px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0,212,255,0.04) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
+  filter: blur(10px);
+}
+
+.ambientTL {
+  top: -180px;
+  left: -140px;
+  width: 640px;
+  height: 640px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.09), transparent 62%);
 }
 
 .ambientBR {
-  position: fixed;
-  bottom: -200px;
-  right: -100px;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(0,212,255,0.03) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+  right: -180px;
+  bottom: -180px;
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.05), transparent 60%);
 }
 
 @media (max-width: 1100px) {
   .grid {
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 860px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
   .main {
     padding: 16px;
     gap: 16px;
