@@ -1,67 +1,222 @@
 .app {
-  position: relative;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 72% 48% at 50% -8%, rgba(37, 99, 235, 0.06), transparent 55%),
+    radial-gradient(ellipse 50% 36% at 100% 0%, rgba(79, 70, 229, 0.05), transparent 50%);
+}
+
+@media (min-width: 901px) {
+  .app {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 900px) {
+  .app {
+    min-height: 100vh;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  padding: 12px 20px 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.main {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-  padding: 28px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
-  gap: 22px;
-  align-items: start;
-}
-
-.cameraCol,
-.analysisCol {
-  display: flex;
-  flex-direction: column;
-}
-
-.ambientTL,
-.ambientBR {
-  position: fixed;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(10px);
-}
-
-.ambientTL {
-  top: -180px;
-  left: -140px;
-  width: 640px;
-  height: 640px;
-  background: radial-gradient(circle, rgba(0, 212, 255, 0.09), transparent 62%);
-}
-
-.ambientBR {
-  right: -180px;
-  bottom: -180px;
-  width: 560px;
-  height: 560px;
-  background: radial-gradient(circle, rgba(0, 255, 136, 0.05), transparent 60%);
-}
-
-@media (max-width: 1100px) {
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .main {
-    padding: 16px;
-    gap: 16px;
+    flex: none;
+    overflow: visible;
+    padding: 12px 16px 0;
   }
+}
+
+.workspaceGrid {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-width: 1520px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.92fr) minmax(260px, 0.92fr) minmax(320px, 1.55fr);
+  gap: 12px;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .workspaceGrid {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+.colCamera,
+.colCenter,
+.colChat {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .colCamera,
+  .colCenter,
+  .colChat {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+}
+
+.colCamera > *,
+.colCenter > *,
+.colChat > * {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+@media (max-width: 900px) {
+  .colCamera > *,
+  .colCenter > *,
+  .colChat > * {
+    flex: none;
+    height: auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 901px) {
+  .workspaceGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .colCamera {
+    grid-column: 1 / -1;
+  }
+
+  .colCenter {
+    grid-column: 1 / 2;
+  }
+
+  .colChat {
+    grid-column: 2 / 3;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspaceGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .colCamera,
+  .colCenter,
+  .colChat {
+    grid-column: 1;
+  }
+
+  .colCamera {
+    order: 0;
+  }
+
+  .colCenter {
+    order: 1;
+  }
+
+  .colChat {
+    order: 2;
+    min-height: min(58vh, 620px);
+  }
+
+  .colChat > * {
+    min-height: min(58vh, 620px);
+  }
+}
+
+@media (max-width: 480px) {
+  .main {
+    padding: 10px 12px 0;
+  }
+
+  .colChat {
+    min-height: min(50vh, 520px);
+  }
+
+  .colChat > * {
+    min-height: min(50vh, 520px);
+  }
+}
+
+/* Settings-driven layout modes */
+.appClean .main .colCenter,
+.appClean .main .colChat {
+  display: none;
+}
+
+.appClean .workspaceGrid {
+  grid-template-columns: 1fr;
+}
+
+.appPresent .workspaceGrid {
+  grid-template-columns: minmax(260px, 1.25fr) minmax(300px, 1fr);
+}
+
+@media (min-width: 901px) {
+  .appPresent .colCenter {
+    display: none;
+  }
+}
+
+.appComfort .main {
+  padding-top: 14px;
+}
+
+.appDensityCompact .main {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.dockWrap {
+  flex-shrink: 0;
+}
+
+.dataToast {
+  position: fixed;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  max-width: min(420px, calc(100vw - 32px));
+  text-align: center;
+  pointer-events: none;
 }

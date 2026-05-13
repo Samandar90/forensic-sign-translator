@@ -1,0 +1,264 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 10px 14px;
+  margin: 0 14px 16px;
+  padding: 10px 14px;
+  border-radius: 20px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition:
+    box-shadow 0.22s ease,
+    border-color 0.22s ease,
+    transform 0.18s ease;
+}
+
+.bar:hover {
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  border-color: color-mix(in srgb, var(--border) 85%, var(--primary) 15%);
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  min-width: 0;
+}
+
+.left {
+  flex: 1 1 200px;
+}
+
+.center {
+  flex: 2 1 240px;
+  justify-content: center;
+}
+
+.signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-subtle) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    color 0.22s ease;
+}
+
+.signalLive {
+  color: color-mix(in srgb, var(--text) 88%, var(--success));
+  border-color: color-mix(in srgb, var(--border) 55%, var(--success));
+  background: color-mix(in srgb, var(--success-muted) 38%, transparent);
+}
+
+.signalDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--text-dim);
+  flex-shrink: 0;
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.signalLive .signalDot {
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-muted);
+  animation: signalPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes signalPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+.signalText {
+  white-space: nowrap;
+}
+
+.right {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+}
+
+.metric {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.metricIcon {
+  flex-shrink: 0;
+  opacity: 0.72;
+  translate: 0 2px;
+}
+
+.metricLabel {
+  font-weight: 600;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.metricVal {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.metricUnit {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-subtle) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.pillMuted {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.pillStrong {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.notice {
+  width: 100%;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 28%, transparent);
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.12s ease;
+}
+
+.iconBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary-muted) 55%, transparent);
+  color: var(--primary);
+  border-color: var(--primary-border);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.iconBtn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.iconBtn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.iconOn {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary-muted) 70%, transparent);
+  border-color: var(--primary-border);
+}
+
+@media (max-width: 720px) {
+  .bar {
+    margin: 0 12px 14px;
+    padding: 10px 12px;
+    border-radius: 16px;
+  }
+
+  .center {
+    flex-basis: 100%;
+    order: 3;
+    justify-content: flex-start;
+  }
+
+  .left {
+    order: 1;
+    flex: 1 1 160px;
+  }
+
+  .right {
+    order: 2;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .iconBtn {
+    transition: none;
+  }
+
+  .signalLive .signalDot {
+    animation: none;
+  }
+}

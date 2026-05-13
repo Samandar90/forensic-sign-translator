@@ -1,0 +1,252 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  max-height: min(78vh, 760px);
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease;
+}
+
+.shell:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+}
+
+.headerIcon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  background: var(--accent-muted);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+}
+
+.headerText {
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.subtitle {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.statusStrip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: #fafbfd;
+  border-bottom: 1px solid var(--border);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #CBD5E1;
+  flex-shrink: 0;
+}
+
+.statusDot[data-live='true'] {
+  background: var(--success);
+  box-shadow: 0 0 0 4px var(--success-muted);
+}
+
+.statusText {
+  min-width: 0;
+  line-height: 1.45;
+}
+
+.gesturePulse {
+  margin: 12px 16px 0;
+  padding: 11px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--primary-border);
+  background: var(--primary-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.gesturePulseLabel {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.gesturePulseMeta {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.thread {
+  flex: 1;
+  min-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  -webkit-overflow-scrolling: touch;
+  background: #fafbfd;
+}
+
+.empty {
+  margin: 28px 12px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.bubbleWrap {
+  display: flex;
+}
+
+.bubbleUser {
+  justify-content: flex-end;
+}
+
+.bubbleAssistant {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 94%;
+  border-radius: 18px;
+  padding: 12px 14px 12px;
+}
+
+.bubbleUserInner {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(79, 70, 229, 0.08) 100%);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  box-shadow: var(--shadow-sm);
+}
+
+.bubbleAssistantInner {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.bubbleMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.bubbleRole {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.bubbleTime {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.userBody {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  text-align: right;
+}
+
+.assistantBody {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.glossBlock {
+  margin-top: 11px;
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.glossLine {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.glossLineMuted {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.glossLabel {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.typed {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    max-height: min(48vh, 520px);
+  }
+
+  .thread {
+    min-height: 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

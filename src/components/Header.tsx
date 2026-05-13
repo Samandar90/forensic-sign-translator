@@ -1,68 +1,88 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { Brain, Shield, Wifi, WifiOff } from 'lucide-react'
-import type { SystemStatus } from '../types'
-import { MODE_LABEL } from '../utils/session'
+import { History, Settings, Shield, Keyboard } from 'lucide-react'
+import type { Lang } from '../i18n'
+import { useT } from '../i18n'
 import styles from './Header.module.css'
 
 interface Props {
-  status: SystemStatus
+  lang: Lang
+  sessionActive: boolean
+  sessionId: string
+  onLangChange: (l: Lang) => void
+  onOpenHistory?: () => void
+  onOpenSettings?: () => void
+  onOpenShortcuts?: () => void
 }
 
-export default function Header({ status }: Props) {
-  const showThinking = status.aiState === 'thinking'
+export default function Header({
+  lang,
+  sessionActive,
+  sessionId,
+  onLangChange,
+  onOpenHistory,
+  onOpenSettings,
+  onOpenShortcuts,
+}: Props) {
+  const t = useT(lang)
 
   return (
     <header className={styles.header}>
-      <div className={styles.left}>
-        <div className={styles.logo}>
-          <Shield size={20} strokeWidth={1.5} />
+      <div className={styles.brand}>
+        <div className={styles.logo} aria-hidden>
+          <Shield size={17} strokeWidth={1.5} />
         </div>
-        <div className={styles.titleGroup}>
-          <h1 className={styles.title}>Forensic Sign Translator</h1>
-          <span className={styles.subtitle}>Emergency communication intelligence interface</span>
+        <div className={styles.titles}>
+          <span className={styles.name}>{t('app_brand')}</span>
+          <span className={styles.tag}>{t('header_subtitle')}</span>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <div className={styles.modeBadge}>{MODE_LABEL}</div>
       </div>
 
       <div className={styles.right}>
-        <motion.div
-          className={`${styles.statusBadge} ${status.isListening ? styles.statusActive : styles.statusIdle}`}
-          animate={status.isListening ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
-          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          {status.isListening ? (
-            <><Wifi size={13} strokeWidth={2} /> AI Listening</>
-          ) : (
-            <><WifiOff size={13} strokeWidth={2} /> Standby</>
-          )}
-        </motion.div>
+        <span className={styles.session} aria-live="polite" title={sessionId}>
+          {sessionActive ? t('header_session_active') : t('header_session_idle')}
+        </span>
 
-        <AnimatePresence>
-          {showThinking && (
-            <motion.div
-              className={styles.processingBadge}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.92 }}
+        <div className={styles.iconGroup}>
+          <button
+            type="button"
+            className={styles.iconBtn}
+            aria-label={t('aria_nav_history')}
+            title={t('nav_history')}
+            onClick={() => onOpenHistory?.()}
+          >
+            <History size={18} strokeWidth={1.65} />
+          </button>
+          <button
+            type="button"
+            className={styles.iconBtn}
+            aria-label={t('aria_open_shortcuts')}
+            title={t('nav_shortcuts')}
+            onClick={() => onOpenShortcuts?.()}
+          >
+            <Keyboard size={18} strokeWidth={1.65} />
+          </button>
+          <button
+            type="button"
+            className={styles.iconBtn}
+            aria-label={t('aria_nav_settings')}
+            title={t('nav_settings')}
+            onClick={() => onOpenSettings?.()}
+          >
+            <Settings size={18} strokeWidth={1.65} />
+          </button>
+        </div>
+
+        <div className={styles.lang} role="group" aria-label={t('aria_lang_group')}>
+          {(['ru', 'uz'] as Lang[]).map(l => (
+            <button
+              key={l}
+              type="button"
+              className={`${styles.langBtn} ${lang === l ? styles.langOn : ''}`}
+              onClick={() => onLangChange(l)}
+              aria-pressed={lang === l}
             >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1.6, repeat: Infinity, ease: 'linear' }}
-                style={{ display: 'flex' }}
-              >
-                <Brain size={12} strokeWidth={2} />
-              </motion.div>
-              Analyzing
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className={styles.sessionInfo}>
-          <span className={styles.sessionLabel}>Session</span>
-          <span className={styles.sessionId}>{status.sessionId}</span>
+              {l === 'ru' ? t('lang_switch_ru') : t('lang_switch_uz')}
+            </button>
+          ))}
         </div>
       </div>
     </header>

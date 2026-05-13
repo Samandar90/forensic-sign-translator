@@ -1,0 +1,19 @@
+.dock {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 14px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.04);
+}
+
+@media (max-width: 900px) {
+  .dock {
+    gap: 12px;
+    padding: 12px 16px 16px;
+  }
+}

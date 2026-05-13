@@ -1,0 +1,377 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  flex: 1;
+  height: 100%;
+  max-height: 100%;
+  padding: 0;
+  border-radius: var(--r-panel);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition:
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+  overflow: hidden;
+}
+
+.shell:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.panelHeader {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-header-bg);
+}
+
+.headIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-lg);
+  color: var(--primary);
+  background: var(--primary-muted);
+  border: 1px solid var(--primary-border);
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.028em;
+  color: var(--text);
+  line-height: var(--leading-tight);
+}
+
+.sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: var(--leading-body);
+}
+
+.bodyScroll {
+  flex: 1;
+  min-height: 0;
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0;
+}
+
+.summaryCard {
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--panel-body-bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+.summaryLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.summaryValue {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.summaryMeta {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.summarySub {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.handGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  min-height: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.waitEmpty {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 28px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--border-strong);
+  background: var(--panel-body-bg);
+}
+
+.waitIcon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  box-shadow: var(--shadow-xs);
+}
+
+.waitIcon[data-tone='error'] {
+  color: var(--error);
+  border-color: rgba(220, 38, 38, 0.2);
+  background: rgba(220, 38, 38, 0.04);
+}
+
+.waitIcon[data-tone='muted'] {
+  color: var(--text-dim);
+}
+
+.waitSpinner {
+  animation: analysisSpin 1s linear infinite;
+}
+
+@keyframes analysisSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.waitTitle {
+  margin: 0;
+  max-width: 280px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: var(--leading-body);
+}
+
+.waitHint {
+  margin: 0;
+  max-width: 320px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: var(--leading-body);
+}
+
+.handCard {
+  padding: 12px 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--panel-body-bg);
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.handCard[data-side='Left'] {
+  border-top: 3px solid rgba(37, 99, 235, 0.55);
+}
+
+.handCard[data-side='Right'] {
+  border-top: 3px solid rgba(79, 70, 229, 0.55);
+}
+
+.handCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.handCardTitle {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.handCardBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}
+
+.gestureRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.gestureIcon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.gestureName {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.confBarWrap {
+  position: relative;
+  margin-top: 8px;
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.confBar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  min-width: 4%;
+  transition: width 0.25s ease;
+}
+
+.confText {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.fingerSummary {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+.chipOpen {
+  border-color: rgba(22, 163, 74, 0.35);
+  background: rgba(22, 163, 74, 0.06);
+}
+
+.chipClosed {
+  border-color: var(--border);
+}
+
+.chipLabel {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.chipVal {
+  font-weight: 600;
+  color: var(--text);
+  text-transform: lowercase;
+}
+
+.absent {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.uncertainHint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  line-height: 1.35;
+}
+
+.devIntel {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--bg-subtle) 92%, transparent);
+}
+
+.devIntelTitle {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.devIntelPre {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-secondary);
+  max-height: 180px;
+  overflow: auto;
+}
+
+@media (max-width: 900px) {
+  .summary,
+  .handGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waitSpinner {
+    animation: none !important;
+  }
+}

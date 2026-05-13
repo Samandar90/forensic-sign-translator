@@ -5,66 +5,192 @@
 }
 
 :root {
-  --cyan: #3ad7ff;
-  --green: #5cf2b4;
-  --red: #ff5b7f;
-  --amber: #ffbe1e;
-  --bg: #03070b;
-  --border: rgba(58, 215, 255, 0.16);
-  --text: #edf7fb;
-  --text-dim: rgba(237, 247, 251, 0.72);
-  --text-muted: rgba(237, 247, 251, 0.42);
-  --font: 'Space Grotesk', 'Segoe UI', sans-serif;
-  --mono-font: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+  /* Design system — premium medical SaaS (light) */
+  --bg:                #F6F8FC;
+  --card:              #FFFFFF;
+  --primary:           #2563EB;
+  --primary-hover:     #1D4ED8;
+  --primary-muted:     rgba(37, 99, 235, 0.08);
+  --primary-border:    rgba(37, 99, 235, 0.22);
+  --accent:            #4F46E5;
+  --accent-muted:      rgba(79, 70, 229, 0.08);
+
+  --success:           #16A34A;
+  --success-muted:     rgba(22, 163, 74, 0.1);
+
+  --text:              #0F172A;
+  --text-secondary:    #64748B;
+  --text-muted:        #64748B;
+  --text-dim:          #94A3B8;
+  --text-on-primary:   #FFFFFF;
+
+  --border:            #E2E8F0;
+  --border-strong:     #CBD5E1;
+
+  --error:             #DC2626;
+  --warning:           #D97706;
+
+  /* Surfaces */
+  --bg-subtle:         #EEF2F7;
+  --glass:             rgba(255, 255, 255, 0.92);
+  --glass-border:      rgba(226, 232, 240, 0.95);
+
+  /* Shadows — soft, Apple-adjacent */
+  --shadow-xs:   0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm:   0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md:   0 4px 16px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-lg:   0 12px 40px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-glow: 0 0 0 1px rgba(37, 99, 235, 0.06);
+
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   14px;
+  --r-xl:   20px;
+  --r-2xl:  24px;
+  --r-cam:  22px;
+  /** Unified outer card chrome (camera / analysis / assistant) */
+  --r-panel: 20px;
+  --panel-header-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --panel-body-bg: #fafbfd;
+
+  --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SF Mono", Consolas, monospace;
+  --leading-tight: 1.35;
+  --leading-body: 1.5;
+  --leading-relaxed: 1.55;
 }
 
 html, body {
   width: 100%;
   min-height: 100%;
-  background:
-    radial-gradient(circle at top, rgba(58, 215, 255, 0.09), transparent 34%),
-    linear-gradient(180deg, #071018, #03070b 44%, #020508 100%);
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font);
+  font-size: 15px;
+  line-height: var(--leading-relaxed);
+  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-body {
-  min-height: 100vh;
-}
-
 #root {
+  width: 100%;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+/* App-like dashboard: lock page scroll; panels scroll internally (desktop / tablet). */
+@media (min-width: 901px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  #root {
+    flex: 1;
+    min-height: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
 }
 
-button {
-  border: 0;
+@media (max-width: 900px) {
+  html,
+  body {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
+  }
+
+  #root {
+    height: auto;
+    max-height: none;
+    min-height: 100vh;
+    overflow: visible;
+  }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Premium thin scrollbars (Firefox + WebKit) */
+.scroll-y,
+.scroll-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-dim) 42%, transparent) transparent;
 }
 
-::-webkit-scrollbar-track {
+.scroll-y::-webkit-scrollbar,
+.scroll-y-auto::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.scroll-y::-webkit-scrollbar-track,
+.scroll-y-auto::-webkit-scrollbar-track {
   background: transparent;
+  margin: 4px 0;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(58, 215, 255, 0.25);
-  border-radius: 999px;
+.scroll-y::-webkit-scrollbar-thumb,
+.scroll-y-auto::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-dim) 38%, var(--border) 40%);
+  border-radius: 100px;
+}
+
+.scroll-y::-webkit-scrollbar-thumb:hover,
+.scroll-y-auto::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-secondary) 55%, var(--border) 30%);
+}
+
+.scroll-y {
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+}
+
+.scroll-y-auto {
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 ::selection {
-  background: rgba(58, 215, 255, 0.18);
+  background: rgba(37, 99, 235, 0.14);
   color: var(--text);
+}
+
+button {
+  font-family: var(--font);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-high-contrast='true'] {
+  --text: #0a0a0a;
+  --text-secondary: #1c1c1c;
+  --border: #000000;
+  --border-strong: #000000;
+}
+
+html[data-large-controls='true'] {
+  font-size: 16px;
+}
+
+html[data-kbd-hints='true'] :focus-visible {
+  outline-width: 3px;
 }

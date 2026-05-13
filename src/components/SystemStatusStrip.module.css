@@ -1,0 +1,72 @@
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px 10px;
+  max-width: 1520px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+.pillOn {
+  color: var(--success);
+  border-color: rgba(22, 163, 74, 0.25);
+  background: var(--success-muted);
+}
+
+.pillAccent {
+  color: var(--primary);
+  border-color: var(--primary-border);
+  background: var(--primary-muted);
+}
+
+.pillMeta {
+  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--bg-subtle) 88%, var(--card));
+  border-color: color-mix(in srgb, var(--border) 92%, var(--text-dim));
+  max-width: min(220px, 38vw);
+}
+
+.pillMetaText {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pillMetaSep {
+  opacity: 0.45;
+  padding: 0 1px;
+}
+
+.pillMetaMono {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .strip {
+    padding: 8px 16px 8px;
+  }
+}

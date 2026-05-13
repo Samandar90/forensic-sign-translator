@@ -1,0 +1,133 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 16px;
+}
+
+.center {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.start,
+.stop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  min-height: 44px;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.start {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.22);
+}
+
+.start:hover:not(:disabled) {
+  background: var(--primary-hover);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.28);
+}
+
+.start:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.start:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.stop {
+  background: var(--card);
+  border-color: var(--border);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-xs);
+}
+
+.stop:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--panel-body-bg);
+  color: var(--text);
+}
+
+.stop:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.stop:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.voiceCol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.voiceToggle,
+.speakBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 44px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease,
+    transform 0.12s ease,
+    box-shadow 0.16s ease;
+}
+
+.voiceToggle:hover,
+.speakBtn:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--panel-body-bg);
+  color: var(--text);
+}
+
+.voiceToggle:active,
+.speakBtn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.voiceOn {
+  border-color: var(--primary-border);
+  background: var(--primary-muted);
+  color: var(--primary);
+}
+
+.speakBtn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
